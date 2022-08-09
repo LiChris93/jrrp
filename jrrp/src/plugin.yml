@@ -1,0 +1,10 @@
+name: jrrp
+main: me.lichris93.jrrp.Main
+version: 1.0
+author: LiChris93
+depend: [MiraiMC]
+commands:
+  jrrp: 
+
+    usage: "/jrrp" 
+    description: "jrrp command" 
