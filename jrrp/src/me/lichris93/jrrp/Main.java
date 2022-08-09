@@ -74,7 +74,7 @@ public class Main extends JavaPlugin {
 				list.add(i);
 			}
 		} else {
-				list.add(admin);
+			list.add(admin);
 		}
 		getLogger().info("config读取完成");
 		getLogger().info("jrrp 加载完成！——By LiChris93[" + (System.currentTimeMillis() - loadtime) + "ms]");
@@ -98,21 +98,23 @@ public class Main extends JavaPlugin {
 					SimpleDateFormat f = new SimpleDateFormat("yyyy 年 MM 月 dd 日");// 格式化当天的日期
 
 					String num = Integer.toString(new Random().nextInt(101));
-					MiraiBot.getBot(qqbot).getGroup(qqgroup)
-							.sendMessage(getsucceedmes.replaceAll("%sendername%", e.getSenderName()).replaceAll("%rpnum%", num));// 发送消息
-					String[] temp = {f.format(now),num};
-					Time.put(e.getSenderID(),temp);// 放置到hashmap中
+					MiraiBot.getBot(qqbot).getGroup(qqgroup).sendMessage(
+							getsucceedmes.replaceAll("%sendername%", e.getSenderName()).replaceAll("%rpnum%", num));// 发送消息
+					String[] temp = { f.format(now), num };
+					Time.put(e.getSenderID(), temp);// 放置到hashmap中
 				} else {// 如果hashmap中存在
 					Date now = new Date();
 					SimpleDateFormat f = new SimpleDateFormat("yyyy 年 MM 月 dd 日");
 					if (!f.format(now).equals(Time.get(e.getSenderID())[0])) {// 如果不是当天再次发送
 						String num = Integer.toString(new Random().nextInt(101));
-						MiraiBot.getBot(qqbot).getGroup(qqgroup)
-								.sendMessage(getsucceedmes.replaceAll("%sendername%", e.getSenderName()).replaceAll("%rpnum%", num));// 发送消息
-						String[] temp = {f.format(now),num};
-						Time.put(e.getSenderID(),temp);// 重置时间
+						MiraiBot.getBot(qqbot).getGroup(qqgroup).sendMessage(
+								getsucceedmes.replaceAll("%sendername%", e.getSenderName()).replaceAll("%rpnum%", num));// 发送消息
+						String[] temp = { f.format(now), num };
+						Time.put(e.getSenderID(), temp);// 重置时间
 					} else {// 如果是当天再次发送
-						MiraiBot.getBot(qqbot).getGroup(qqgroup).sendMessage(getfailmes.replaceAll("%sendername%", e.getSenderName()).replaceAll("%rpnum%", Time.get(e.getSenderID())[1]));// 发送还在冷却中消息
+						MiraiBot.getBot(qqbot).getGroup(qqgroup)
+								.sendMessage(getfailmes.replaceAll("%sendername%", e.getSenderName())
+										.replaceAll("%rpnum%", Time.get(e.getSenderID())[1]));// 发送还在冷却中消息
 					}
 				}
 			}
@@ -128,8 +130,8 @@ public class Main extends JavaPlugin {
 				if (haspermission(e.getSenderID())) {
 					String result = "{";
 					for (Map.Entry<Long, String[]> entry : Time.entrySet()) {
-			            result += (entry.getKey()+"=["+entry.getValue()[0]+","+entry.getValue()[1]+"]");
-			        }
+						result += (entry.getKey() + "=[" + entry.getValue()[0] + "," + entry.getValue()[1] + "]");
+					}
 					result += "}";
 					MiraiBot.getBot(qqbot).getGroup(qqgroup).sendMessage(result);
 				} else {
@@ -145,113 +147,118 @@ public class Main extends JavaPlugin {
 		@Override
 		@ParametersAreNonnullByDefault
 		public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
-			if (args.length == 1 && args[0].equals("help")) {
-				commandSender.sendMessage("§a--------------[ jrrp ]--------------");
-				commandSender.sendMessage("§a/jrrp help              显示本帮助信息");
-				commandSender.sendMessage("§a/jrrp reload                 重载配置");
-				commandSender.sendMessage("§a/jrrp addadmin <qqid>          加管理");
-				commandSender.sendMessage("§a/jrrp deladmin <qqid>          减管理");
-				commandSender.sendMessage("§a/jrrp isadmin <qqid>    判断是否是管理");
-				commandSender.sendMessage("§a----------[ By LiChris93 ]-----------");
-				return true;
-			} else if (args.length == 2 && args[0].equals("addadmin")) {
-				if (args[1].matches("[1-9][0-9]{4,14}")) {
-					list.add(args[1]);
-					final boolean sta = null != list && list.size() > 0;
-					List<String> templist = new ArrayList<String>();
-					if (sta) {
-						Set<String> set = new HashSet<String>();
-						set.addAll(list);
-						templist.addAll(set);
-					}
-					String temp = "";
-					if (templist.size() > 1) {
-						for (int i = 0; i < templist.size(); i++) {
-							temp += templist.get(i) + ",";
+			if (commandSender.isOp()) {
+				if (args.length == 1 && args[0].equals("help")) {
+					commandSender.sendMessage("§a--------------[ jrrp ]--------------");
+					commandSender.sendMessage("§a/jrrp help              显示本帮助信息");
+					commandSender.sendMessage("§a/jrrp reload                 重载配置");
+					commandSender.sendMessage("§a/jrrp addadmin <qqid>          加管理");
+					commandSender.sendMessage("§a/jrrp deladmin <qqid>          减管理");
+					commandSender.sendMessage("§a/jrrp isadmin <qqid>    判断是否是管理");
+					commandSender.sendMessage("§a----------[ By LiChris93 ]-----------");
+					return true;
+				} else if (args.length == 2 && args[0].equals("addadmin")) {
+					if (args[1].matches("[1-9][0-9]{4,14}")) {
+						list.add(args[1]);
+						final boolean sta = null != list && list.size() > 0;
+						List<String> templist = new ArrayList<String>();
+						if (sta) {
+							Set<String> set = new HashSet<String>();
+							set.addAll(list);
+							templist.addAll(set);
 						}
-					} else {
-						temp = templist.get(0);
-					}
-					config.set("admin", temp);
-					saveConfig();
-					commandSender.sendMessage("§a添加完成!" + args[1]);
-					return true;
-				} else {
-					commandSender.sendMessage("§c不正确的QQ号！");
-					return true;
-				}
-			} else if (args.length == 2 && args[0].equals("deladmin")) {
-				if (haspermission(Long.valueOf(args[1]))) {
-					list.remove(args[1]);
-					final boolean sta = null != list && list.size() > 0;
-					List<String> templist = new ArrayList<String>();
-					if (sta) {
-						Set<String> set = new HashSet<String>();
-						set.addAll(list);
-						templist.addAll(set);
-					}
-					String temp = "";
-					if (templist.size() > 1) {
-						for (int i = 0; i < templist.size(); i++) {
-							temp += templist.get(i) + ",";
+						String temp = "";
+						if (templist.size() > 1) {
+							for (int i = 0; i < templist.size(); i++) {
+								temp += templist.get(i) + ",";
+							}
+						} else {
+							temp = templist.get(0);
 						}
+						config.set("admin", temp);
+						saveConfig();
+						commandSender.sendMessage("§a添加完成!" + args[1]);
+						return true;
 					} else {
-						temp = templist.get(0);
+						commandSender.sendMessage("§c不正确的QQ号！");
+						return true;
 					}
-					config.set("admin", temp);
-					saveConfig();
-					commandSender.sendMessage("§a移除完成!" + args[1]);
-					return true;
-				} else if (!args[1].matches("[1-9][0-9]{4,14}")) {
-					commandSender.sendMessage("§c不正确的QQ号！");
-					return true;
-				} else {
-					commandSender.sendMessage("§c该用户不是管理！");
-					return true;
-				}
-			} else if (args.length == 1 && args[0].equals("reload")) {
-				try {
-					list.clear();
-					qqbot = config.getLong("bot");
-					qqgroup = config.getLong("group");
-					admin = config.getString("admin");
-					version = config.getString("version");
-					if (admin.contains(",")) {
-						String[] temp = admin.split(",");
-						for (String i : temp) {
-							if (i.matches("[1-9][0-9]{4,14}")) {
-								list.add(i);
+				} else if (args.length == 2 && args[0].equals("deladmin")) {
+					if (haspermission(Long.valueOf(args[1]))) {
+						list.remove(args[1]);
+						final boolean sta = null != list && list.size() > 0;
+						List<String> templist = new ArrayList<String>();
+						if (sta) {
+							Set<String> set = new HashSet<String>();
+							set.addAll(list);
+							templist.addAll(set);
+						}
+						String temp = "";
+						if (templist.size() > 1) {
+							for (int i = 0; i < templist.size(); i++) {
+								temp += templist.get(i) + ",";
+							}
+						} else {
+							temp = templist.get(0);
+						}
+						config.set("admin", temp);
+						saveConfig();
+						commandSender.sendMessage("§a移除完成!" + args[1]);
+						return true;
+					} else if (!args[1].matches("[1-9][0-9]{4,14}")) {
+						commandSender.sendMessage("§c不正确的QQ号！");
+						return true;
+					} else {
+						commandSender.sendMessage("§c该用户不是管理！");
+						return true;
+					}
+				} else if (args.length == 1 && args[0].equals("reload")) {
+					try {
+						list.clear();
+						qqbot = config.getLong("bot");
+						qqgroup = config.getLong("group");
+						admin = config.getString("admin");
+						version = config.getString("version");
+						if (admin.contains(",")) {
+							String[] temp = admin.split(",");
+							for (String i : temp) {
+								if (i.matches("[1-9][0-9]{4,14}")) {
+									list.add(i);
+								} else {
+									getLogger().warning(i + "不是有效的qq号");
+								}
+							}
+						} else {
+							if (admin.matches("[1-9][0-9]{4,14}")) {
+								list.add(admin);
 							} else {
-								getLogger().warning(i+"不是有效的qq号");
+								getLogger().warning(admin + "不是有效的qq号");
 							}
 						}
-					} else {
-						if (admin.matches("[1-9][0-9]{4,14}")) {
-							list.add(admin);
-						} else {
-							getLogger().warning(admin+"不是有效的qq号");
-						}
-					}
-					commandSender.sendMessage("§aconfig重载完成");
-					return true;
-				} catch (Exception e) {
-					getLogger().info(e.toString());
+						commandSender.sendMessage("§aconfig重载完成");
+						return true;
+					} catch (Exception e) {
+						getLogger().info(e.toString());
 
-					commandSender.sendMessage("§cconfig重载失败，详细信息查看控制台");
+						commandSender.sendMessage("§cconfig重载失败，详细信息查看控制台");
+						return true;
+					}
+				} else if (args.length == 2 && args[0].equals("isadmin")) {
+					if (haspermission(Long.valueOf(args[1]))) {
+						commandSender.sendMessage("§a该用户是管理");
+					} else {
+						commandSender.sendMessage("§c该用户不是管理");
+					}
+					return true;
+				} else {
+					commandSender.sendMessage("§ajrrp v" + version + "正在这个服务器上运行, 使用 /jrrp help 来获取帮助");
 					return true;
 				}
-			} else if (args.length == 2 && args[0].equals("isadmin")) {
-				if (haspermission(Long.valueOf(args[1]))) {
-					commandSender.sendMessage("§a该用户是管理");
-				} else {
-					commandSender.sendMessage("§c该用户不是管理");
-				}
-				return true;
-			} else {
-				commandSender.sendMessage("§ajrrp v" + version + "正在这个服务器上运行, 使用 /jrrp help 来获取帮助");
+
+			}else {
+				commandSender.sendMessage("§c你没有权限");
 				return true;
 			}
-
 		}
 	}
 
